@@ -7,11 +7,6 @@ type AuthedUser = {
 };
 
 export async function getUserFromRequest(req: NextRequest): Promise<AuthedUser | null> {
-  const testUserId = req.headers.get("x-user-id");
-  if (testUserId) {
-    return { id: testUserId };
-  }
-
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
     return null;
@@ -33,6 +28,14 @@ export async function getUserFromRequest(req: NextRequest): Promise<AuthedUser |
     id: data.user.id,
     email: data.user.email
   };
+}
+
+export async function requireUserFromRequest(req: NextRequest): Promise<AuthedUser> {
+  const user = await getUserFromRequest(req);
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+  return user;
 }
 
 export async function getProfile(userId: string): Promise<{

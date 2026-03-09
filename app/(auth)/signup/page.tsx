@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { InputField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ export default function SignupPage() {
     setMessage(null);
 
     try {
-      const supabase = createSupabaseBrowserClient();
+      const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signUp({
         email,
         password,

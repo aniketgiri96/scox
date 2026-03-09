@@ -10,3 +10,12 @@ export function createSupabaseBrowserClient() {
 
   return createClient(url, anonKey);
 }
+
+let cachedBrowserClient: ReturnType<typeof createSupabaseBrowserClient> | null = null;
+
+export function getSupabaseBrowserClient() {
+  if (!cachedBrowserClient) {
+    cachedBrowserClient = createSupabaseBrowserClient();
+  }
+  return cachedBrowserClient;
+}

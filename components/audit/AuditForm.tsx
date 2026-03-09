@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { InputField, TextareaField } from "@/components/ui/Field";
 import { AuditResult } from "@/components/audit/AuditResult";
+import { authedFetch } from "@/lib/api/auth-fetch";
 import type { AuditResult as AuditResultType } from "@/lib/audit/types";
+import Link from "next/link";
 
 type AuditApiResponse = AuditResultType & {
   auditId: string;
@@ -16,7 +18,6 @@ export function AuditForm() {
   const [url, setUrl] = useState("");
   const [content, setContent] = useState("");
   const [competitors, setCompetitors] = useState("");
-  const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AuditApiResponse | null>(null);
@@ -36,12 +37,8 @@ export function AuditForm() {
     setError(null);
 
     try {
-      const response = await fetch("/api/audit", {
+      const response = await authedFetch("/api/audit", {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(userId ? { "x-user-id": userId } : {})
-        },
         body: JSON.stringify({
           niche,
           industry,
@@ -76,12 +73,6 @@ export function AuditForm() {
           <InputField label="Industry" placeholder="Dental" value={industry} onChange={(e) => setIndustry(e.target.value)} required />
         </div>
         <InputField
-          label="User ID (temporary dev auth)"
-          placeholder="Supabase user UUID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
-        <InputField
           label="Website URL (optional)"
           placeholder="https://example.com"
           value={url}
@@ -111,7 +102,19 @@ export function AuditForm() {
         ) : null}
       </form>
 
-      {result ? <AuditResult data={result} /> : null}
+      {result ? (
+        <>
+          <section className="card row" style={{ padding: "0.8rem", justifyContent: "space-between", flexWrap: "wrap" }}>
+            <p style={{ margin: 0, fontSize: 14 }}>
+              Audit saved: <strong>{result.auditId}</strong>
+            </p>
+            <Link href={`/audit/${result.auditId}`} style={{ fontWeight: 600, fontSize: 14 }}>
+              Open detail page
+            </Link>
+          </section>
+          <AuditResult data={result} />
+        </>
+      ) : null}
     </div>
   );
 }

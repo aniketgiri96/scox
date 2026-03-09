@@ -3,25 +3,7 @@ import { getStripeClient } from "@/lib/stripe/client";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import { fail, ok } from "@/lib/http";
 import { requireEnv } from "@/lib/config";
-
-function resolvePlanFromPrice(priceId?: string | null): string {
-  const starter = process.env.STRIPE_STARTER_PRICE_ID;
-  const pro = process.env.STRIPE_PRO_PRICE_ID;
-  const agency = process.env.STRIPE_AGENCY_PRICE_ID;
-
-  if (!priceId) return "free";
-  if (priceId === starter) return "starter";
-  if (priceId === pro) return "pro";
-  if (priceId === agency) return "agency";
-  return "free";
-}
-
-function planLimit(plan: string): number {
-  if (plan === "starter") return 10;
-  if (plan === "pro") return 50;
-  if (plan === "agency") return 999999;
-  return 1;
-}
+import { defaultLimitForPlan, resolvePlanFromPriceId } from "@/lib/usage/plans";
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
@@ -47,14 +29,14 @@ export async function POST(req: NextRequest) {
       const customerId =
         typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id;
       const priceId = subscription.items.data[0]?.price?.id;
-      const plan = resolvePlanFromPrice(priceId);
+      const plan = resolvePlanFromPriceId(priceId);
 
       if (customerId) {
         const { error } = await supabase
           .from("profiles")
           .update({
             plan,
-            audits_limit: planLimit(plan),
+            audits_limit: defaultLimitForPlan(plan),
             stripe_subscription_id: subscription.id
           })
           .eq("stripe_customer_id", customerId);
