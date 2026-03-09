@@ -34,7 +34,8 @@ export default function LoginPage() {
       }
 
       setMessage("Login successful. Redirecting...");
-      router.replace("/dashboard");
+      const redirectedFrom = new URLSearchParams(window.location.search).get("redirectedFrom");
+      router.replace(redirectedFrom || "/dashboard");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Login failed");
     }

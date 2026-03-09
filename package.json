@@ -6,14 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.49.4",
     "cheerio": "^1.0.0",
-    "next": "14.2.28",
+    "next": "16.1.6",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "stripe": "^18.0.0",
@@ -23,8 +23,8 @@
     "@types/node": "^20.17.19",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.28",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.1.6",
     "typescript": "^5.7.3"
   }
 }
