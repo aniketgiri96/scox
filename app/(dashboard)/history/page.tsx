@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { authedFetch } from "@/lib/api/auth-fetch";
 
 type AuditHistoryRow = {
@@ -93,7 +94,7 @@ export default function HistoryPage() {
                   {item.grade} · {item.score}
                 </span>
                 {item.is_public && item.public_slug ? (
-                  <Link href={`/public/${item.public_slug}`} style={{ fontSize: 13, fontWeight: 600 }}>
+                  <Link href={`/public/${item.public_slug}` as Route} style={{ fontSize: 13, fontWeight: 600 }}>
                     Public link
                   </Link>
                 ) : null}

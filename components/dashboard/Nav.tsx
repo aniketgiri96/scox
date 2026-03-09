@@ -1,8 +1,10 @@
 import Link from "next/link";
+import type { Route } from "next";
 
 const links = [
   { href: "/dashboard", label: "Overview" },
   { href: "/audit", label: "New Audit" },
+  { href: "/framework", label: "Framework" },
   { href: "/history", label: "History" },
   { href: "/patterns", label: "Patterns" },
   { href: "/settings", label: "Settings" }
@@ -30,7 +32,7 @@ export function DashboardNav() {
           {links.map((link) => (
             <Link
               key={link.href}
-              href={link.href}
+              href={link.href as Route}
               style={{
                 border: "1px solid var(--border)",
                 borderRadius: 10,

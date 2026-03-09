@@ -5,6 +5,7 @@ import Link from "next/link";
 import { InputField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { authedFetch } from "@/lib/api/auth-fetch";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ export default function SignupPage() {
 
     try {
       const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -27,6 +28,15 @@ export default function SignupPage() {
       if (error) {
         throw error;
       }
+
+      if (data.session) {
+        try {
+          await authedFetch("/api/billing/customer", { method: "POST" });
+        } catch {
+          // Billing profile sync should not block signup.
+        }
+      }
+
       setMessage("Signup successful. Check your inbox to verify email, then log in.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Signup failed");

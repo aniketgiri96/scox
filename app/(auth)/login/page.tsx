@@ -25,9 +25,13 @@ export default function LoginPage() {
         throw error;
       }
 
-      await authedFetch("/api/billing/customer", {
-        method: "POST"
-      });
+      try {
+        await authedFetch("/api/billing/customer", {
+          method: "POST"
+        });
+      } catch {
+        // Billing profile sync should not block login.
+      }
 
       setMessage("Login successful. Redirecting...");
       router.replace("/dashboard");

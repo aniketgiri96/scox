@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import Stripe from "stripe";
 import { getStripeClient } from "@/lib/stripe/client";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import { fail, ok } from "@/lib/http";
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     const supabase = createSupabaseServiceClient();
 
     if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
-      const subscription = event.data.object;
+      const subscription = event.data.object as Stripe.Subscription;
       const customerId =
         typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id;
       const priceId = subscription.items.data[0]?.price?.id;
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (event.type === "customer.subscription.deleted") {
-      const subscription = event.data.object;
+      const subscription = event.data.object as Stripe.Subscription;
       const customerId =
         typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id;
 

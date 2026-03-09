@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { InputField, TextareaField } from "@/components/ui/Field";
 import { AuditResult } from "@/components/audit/AuditResult";
+import { AuditActions } from "@/components/audit/AuditActions";
 import { authedFetch } from "@/lib/api/auth-fetch";
 import type { AuditResult as AuditResultType } from "@/lib/audit/types";
 import Link from "next/link";
@@ -112,6 +113,7 @@ export function AuditForm() {
               Open detail page
             </Link>
           </section>
+          <AuditActions auditId={result.auditId} isPublic={false} publicSlug={null} />
           <AuditResult data={result} />
         </>
       ) : null}

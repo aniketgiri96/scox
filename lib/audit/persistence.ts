@@ -82,3 +82,69 @@ export async function incrementUsage(userId: string, auditId: string, tokensUsed
     throw new Error(`Failed to insert usage log: ${usageError.message}`);
   }
 }
+
+function buildPublicSlug(niche: string, auditId: string): string {
+  const base = niche
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 32);
+  return `${base || "audit"}-${auditId.slice(0, 8)}`;
+}
+
+export async function publishAudit(userId: string, auditId: string): Promise<{ slug: string }> {
+  const supabase = createSupabaseServiceClient();
+
+  const { data: audit, error: auditError } = await supabase
+    .from("audits")
+    .select("id, niche, user_id")
+    .eq("id", auditId)
+    .single();
+
+  if (auditError || !audit) {
+    throw new Error("Audit not found");
+  }
+
+  if (audit.user_id !== userId) {
+    throw new Error("Forbidden");
+  }
+
+  const slug = buildPublicSlug(audit.niche, audit.id);
+  const { error: updateError } = await supabase
+    .from("audits")
+    .update({ is_public: true, public_slug: slug })
+    .eq("id", audit.id);
+
+  if (updateError) {
+    throw new Error(`Failed to publish audit: ${updateError.message}`);
+  }
+
+  return { slug };
+}
+
+export async function unpublishAudit(userId: string, auditId: string): Promise<void> {
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase
+    .from("audits")
+    .select("user_id")
+    .eq("id", auditId)
+    .single();
+
+  if (error || !data) {
+    throw new Error("Audit not found");
+  }
+
+  if (data.user_id !== userId) {
+    throw new Error("Forbidden");
+  }
+
+  const { error: updateError } = await supabase
+    .from("audits")
+    .update({ is_public: false, public_slug: null })
+    .eq("id", auditId);
+
+  if (updateError) {
+    throw new Error(`Failed to unpublish audit: ${updateError.message}`);
+  }
+}

@@ -67,3 +67,18 @@ Return exactly one JSON object with this schema:
 }
 Return ONLY valid JSON. No markdown, no backticks, no preamble.
 `.trim();
+
+export const FRAMEWORK_SYSTEM_PROMPT = `
+You are a senior growth strategist for SEO + GEO.
+Return exactly one JSON object with this schema:
+{
+  "positioning": string,
+  "audienceModel": string[],
+  "pillarPlan": string[],
+  "contentCadence": string,
+  "authorityPlan": string[],
+  "geoPlan": string[],
+  "kpis": string[]
+}
+Return ONLY valid JSON. No markdown, no backticks, no preamble.
+`.trim();

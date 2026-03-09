@@ -59,6 +59,16 @@ export type ResearchResult = {
   risks: string[];
 };
 
+export type FrameworkStrategy = {
+  positioning: string;
+  audienceModel: string[];
+  pillarPlan: string[];
+  contentCadence: string;
+  authorityPlan: string[];
+  geoPlan: string[];
+  kpis: string[];
+};
+
 export type IndustryPattern = {
   archetype: string;
   total_audits: number;
